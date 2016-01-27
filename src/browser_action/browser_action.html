@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <link rel="stylesheet" type="text/css" href="browser_action.css"/>
+
+    <script src="../lib/moment.js"></script>
+    <script src="../lib/lodash.js"></script>
+    <script src="../lib/jquery-2.1.4.min.js"></script>
+    <script src="../browser_action/browser_action.js"></script>
+    <title></title>
+</head>
+<body>
+<div id="container">
+
+    <div id="topBar">
+        <input type="text" id="mainput" placeholder="IP/Hostname"/>
+        <input type="text" id="mainame" placeholder="Instance Name"/>
+        <button id="open">Open</button>
+        <button id="add">Add</button>
+    </div>
+
+
+    <p id="err"></p>
+
+    <table id="hostsTable">
+        <thead>
+        <tr>
+            <th>Hostname</th>
+            <th>Instance Name</th>
+            <th>Last Updated</th>
+            <th class="x">Delete</th>
+        </tr>
+        </thead>
+        <tbody id="hostsList">
+        </tbody>
+    </table>
+
+</div>
+</body>
+</html>
