@@ -1,6 +1,6 @@
 {
     "name": "SSH Go!",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "manifest_version": 2,
     "description": "Launch SSH session from your browser.",
     "icons": {
