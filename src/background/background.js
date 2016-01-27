@@ -58,9 +58,9 @@ function openHost(hostname) {
         url: 'ssh://' + (hostname).replace('ssh://', ''),
         active: false
     }, function (tab) {
-        setTimeout(function () {
-            chrome.tabs.remove(tab.id)
-        }, 2000)
+        //setTimeout(function () {
+        //    chrome.tabs.remove(tab.id)
+        //}, 2000)
     });
 
     console.log('Launch ' + hostname);
