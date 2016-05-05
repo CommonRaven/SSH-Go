@@ -75,7 +75,7 @@ function onUpdate() {
 
 function launch(skipLaunch) {
     var hostname = $('#mainput').val();
-    createHost(hostname, $('#mainame').val());
+    createHost(hostname, $('#mainame').val() || '?');
     if (skipLaunch === true) return;
     bg.openHost(hostname);
 }

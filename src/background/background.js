@@ -13,15 +13,16 @@ chrome.extension.onMessage.addListener(function (request, sender, sendResponse) 
         if (request.newName) {
             var hosts = lsRead();
             var action = 'Launch';
-            if (_.findIndex(hosts, {hostname: request.newHost, name: request.newName}) == -1) {
+            if (_.findIndex(hosts, {hostname: request.newHost.trim()}) == -1) {
                 hosts.unshift({
-                    name: request.newName,
-                    hostname: request.newHost,
+                    name: request.newName.trim() || '?',
+                    hostname: request.newHost.trim(),
                     lastMod: Date.now()
                 });
                 lsWrite(hosts);
                 action += ' & Save';
             }
+
             chrome.notifications.create('expense_' + Date.now(), {
                 type: 'basic',
                 title: action + ' Host: ' + request.newName,
