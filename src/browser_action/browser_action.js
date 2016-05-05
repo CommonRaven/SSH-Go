@@ -5,9 +5,7 @@
  */
 
 var hosts = [];
-var observe;
 var bg = chrome.extension.getBackgroundPage();
-var ls = bg.localStorage;
 
 function createHost(hostname, name) {
     hosts.unshift({
@@ -15,6 +13,7 @@ function createHost(hostname, name) {
         hostname: hostname,
         lastMod: Date.now()
     });
+    onUpdate();
 }
 
 function refreshView(hosts) {
@@ -36,6 +35,7 @@ function refreshView(hosts) {
 function rmHost(hostname, name) {
     var idx = _.findIndex(hosts, {hostname: hostname, name: name});
     if (idx > -1) hosts.splice(idx, 1);
+    onUpdate();
 }
 
 function renameHost(hostname, name) {
@@ -43,6 +43,7 @@ function renameHost(hostname, name) {
     var idx = _.findIndex(hosts, {hostname: hostname, name: name});
     var newname = prompt('Rename host `' + hosts[idx].name + '`', hosts[idx].name) || name;
     hosts.splice(idx, 1, _.extend(hosts[idx], {name: newname, lastMod: Date.now()}));
+    onUpdate();
 }
 
 function mkClickableName(host) {
@@ -95,11 +96,8 @@ function init() {
 
     $('#open').click(launch);
     $('#add').click(_.partial(launch, true));
-
-
+    
     hosts = bg.lsRead();
-    observe = Array.observe(hosts, onUpdate);
-
     refreshView(hosts);
 }
 
