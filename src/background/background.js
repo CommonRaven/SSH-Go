@@ -53,15 +53,15 @@ function lsWrite(hosts) {
     localStorage.hosts = JSON.stringify(hosts);
 }
 
-function openHost(hostname) {
-
+function openHost(hostname, killtab) {
     chrome.tabs.create({
         url: 'ssh://' + (hostname).replace('ssh://', ''),
         active: false
     }, function (tab) {
-        //setTimeout(function () {
-        //    chrome.tabs.remove(tab.id)
-        //}, 2000)
+        console.log(killtab);
+        if(killtab) setTimeout(function () {
+           chrome.tabs.remove(tab.id)
+        }, 1000)
     });
 
     console.log('Launch ' + hostname);

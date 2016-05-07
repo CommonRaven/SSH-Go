@@ -4,101 +4,66 @@
  * on 29/08/2015
  */
 
-var hosts = [];
 var bg = chrome.extension.getBackgroundPage();
 
-function createHost(hostname, name) {
-    hosts.unshift({
-        name: name,
-        hostname: hostname,
-        lastMod: Date.now()
+function uuid() { // @formatter:off
+    return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g,a=>(a^Math.random()*16>>a/4).toString(16));
+}// @formatter:on
+
+angular.module('sshgo', ['ngStorage'])
+
+    .controller('browserAction', function ($scope, $localStorage) {
+
+        $scope.sortableCols = [
+            {
+                text: 'Instance Name',
+                key: 'name'
+            }, {
+                text: 'Hostname',
+                key: 'hostname'
+            }, {
+                text: 'Last Updated',
+                key: 'lastMod'
+            }];
+
+        $scope.$ls = $localStorage;
+
+        $scope.fromNow = function (date) {
+            return moment(date).fromNow().replace('a few ', '')
+        };
+
+        $scope.launchHost = function(hostname){
+            bg.openHost(hostname.trim(), $scope.$ls.killtab);
+        };
+
+        $scope.createHost = function (skipLaunch) {
+            $scope.mainhost = $scope.mainhost.trim();
+            if (_.findIndex($scope.$ls.hosts, {hostname: $scope.mainhost}) > -1) {
+                $scope.$ls.hosts.unshift({
+                    id: uuid(),
+                    name: $scope.mainame.trim(),
+                    hostname: $scope.mainhost.trim(),
+                    lastMod: Date.now()
+                });
+            }
+            if (skipLaunch !== false) $scope.launchHost($scope.mainhost);
+        };
+
+        $scope.rmHost = function (hostID) {
+            _.remove($scope.$ls.hosts, function (host) {
+                return host.id == hostID;
+            });
+        };
+
+        $scope.renameHost = function (host) {
+            _.map($scope.$ls.hosts, function (h) {
+                if (h.id != host.id) return h;
+                h.name = prompt(`Rename host '${host.name}'`, host.name) || name;
+                return h;
+            })
+        };
+
+        // $scope.$ls.sortType = 'Hostname'; // set the default sort type
+        // $scope.$ls.sortReverse = false;  // set the default sort order
+        // $scope.$ls.searchFish = '';     // set the default search/filter term
     });
-    onUpdate();
-}
-
-function refreshView(hosts) {
-    $('#hostsList').html(hosts.map(mkRow).join(''));
-    $('.killBtn').each(function () {
-        $(this).click(_.partial(rmHost, $(this).attr('hostname'), $(this).attr('name')));
-    });
-
-    $('.clickHost').each(function () {
-        $(this).click(_.partial(bg.openHost, $(this).attr('hostname')));
-    });
-
-    $('.clickName').each(function () {
-        $(this).click(_.partial(renameHost, $(this).attr('hostname'), $(this).attr('name')));
-
-    });
-}
-
-function rmHost(hostname, name) {
-    var idx = _.findIndex(hosts, {hostname: hostname, name: name});
-    if (idx > -1) hosts.splice(idx, 1);
-    onUpdate();
-}
-
-function renameHost(hostname, name) {
-    console.log('rename');
-    var idx = _.findIndex(hosts, {hostname: hostname, name: name});
-    var newname = prompt('Rename host `' + hosts[idx].name + '`', hosts[idx].name) || name;
-    hosts.splice(idx, 1, _.extend(hosts[idx], {name: newname, lastMod: Date.now()}));
-    onUpdate();
-}
-
-function mkClickableName(host) {
-    return '<a class="clickName" hostname="' + host.hostname + '" name="' + host.name + '">' + host.name + '</a>';
-}
-
-function mkClickableHost(host) {
-    return '<a href="#" class="clickHost" hostname="' + host.hostname + '">' + host.hostname + '</a>';
-}
-
-function mkExitButton(host) {
-    return '<a class= "killBtn" hostname="' + host.hostname + '" name="' + host.name + '"></a>';
-}
-
-function mkRow(host) {
-    return '' +
-        '<tr><td>' + mkClickableHost(host) +
-        '</td><td>' + mkClickableName(host) +
-        '</td><td>' + moment(host.lastMod).fromNow().replace('a few ', '') +
-        '</td><td class="x">' + mkExitButton(host) +
-        '</td></tr>';
-
-}
-
-function onUpdate() {
-    refreshView(hosts);
-    bg.lsWrite(hosts);
-}
-
-function launch(skipLaunch) {
-    var hostname = $('#mainput').val();
-    createHost(hostname, $('#mainame').val() || '?');
-    if (skipLaunch === true) return;
-    bg.openHost(hostname);
-}
-
-function init() {
-    // Initialize functions and register click on hostname area:
-    $('#mainput').focus().keyup(function (event) {
-        if (event.keyCode == 13) {
-            $("#open").click();
-        }
-    });
-    // Register click on name area:
-    $("#mainame").keyup(function (event) {
-        if (event.keyCode == 13) {
-            $("#open").click();
-        }
-    });
-
-    $('#open').click(launch);
-    $('#add').click(_.partial(launch, true));
-    
-    hosts = bg.lsRead();
-    refreshView(hosts);
-}
-
-$(init);

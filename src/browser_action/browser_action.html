@@ -4,22 +4,34 @@
     <meta charset="UTF-8">
 
     <link rel="stylesheet" type="text/css" href="browser_action.css"/>
+    <link rel="stylesheet" href="css/font-awesome.min.css">
 
     <script src="../lib/moment.js"></script>
     <script src="../lib/lodash.js"></script>
     <script src="../lib/jquery-2.1.4.min.js"></script>
+    <script src="../lib/angular.min.js"></script>
+    <script src="../lib/ngStorage.min.js"></script>
     <script src="../browser_action/browser_action.js"></script>
     <title></title>
 </head>
-<body>
-<div id="container">
+<body ng-app="sshgo">
+<div id="container" ng-controller="browserAction">
 
-    <div id="topBar">
-        <input type="text" id="mainput" placeholder="IP/Hostname"/>
-        <input type="text" id="mainame" placeholder="Instance Name"/>
-        <button id="open">Open</button>
-        <button id="add">Add</button>
+    <div class="topBar">
+        <input type="text" id="mainput" ng-keydown="$event.which === 13 && createHost()" ng-model="mainhost" placeholder="IP/Hostname"/>
+        <input type="text" id="mainame" ng-keydown="$event.which === 13 && createHost()" ng-model="mainame" placeholder="Instance Name"/>
+        <button id="open" ng-click="launchHost()">Launch & Add</button>
+        <button id="add"  ng-click="launchHost(false)">Add</button>
     </div>
+
+    <div class="topBar">
+        <input type="text" placeholder="Filter hosts" ng-model="$ls.searchFish"/>
+        <label>
+            <input type="checkbox" ng-model="$ls.killtab"/>
+            Kill tab automatically {{$ls.killtab}}
+        </label>
+    </div>
+
 
 
     <p id="err"></p>
@@ -27,13 +39,21 @@
     <table id="hostsTable">
         <thead>
         <tr>
-            <th>Hostname</th>
-            <th>Instance Name</th>
-            <th>Last Updated</th>
+            <th ng-repeat="col in sortableCols" ng-click="$ls.sortType = col.key; $ls.sortReverse = !$ls.sortReverse;">{{col.text}}
+                <span ng-show="$ls.sortType == col.key && !$ls.sortReverse" class="fa fa-caret-down"></span>
+                <span ng-show="$ls.sortType == col.key && $ls.sortReverse" class="fa fa-caret-up"></span>
+            </th>
             <th class="x">Delete</th>
         </tr>
         </thead>
-        <tbody id="hostsList">
+        <tbody>
+        <tr ng-repeat="host in $ls.hosts | orderBy:$ls.sortType:$ls.sortReverse">
+            <td><a class="clickName" ng-click="renameHost(host)">{{host.name}}</a></td>
+            <td><a href="#" class="clickHost" ng-click="launchHost(host.hostname)">{{host.hostname}}</a></td>
+            <td>{{fromNow(host.lastMod)}}</td>
+            <td class="x"><a class="killBtn" ng-click="rmHost(host.id)"></a></td>
+        </tr>
+
         </tbody>
     </table>
 

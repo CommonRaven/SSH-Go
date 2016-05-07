@@ -45,14 +45,14 @@ table {
   text-align: center;
   display: flex;
   flex-direction: column; }
-  #container #topBar {
+  #container .topBar {
     margin: 20px;
     display: flex; }
-    #container #topBar * {
+    #container .topBar * {
       flex-grow: 1;
       margin-right: 3px;
       margin-left: 3px; }
-    #container #topBar #mainput {
+    #container .topBar #mainput {
       min-width: 290px; }
   #container #hostsTable {
     min-width: 600px;
