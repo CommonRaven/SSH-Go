@@ -20,8 +20,8 @@
     <div class="topBar">
         <input type="text" id="mainput" ng-keydown="$event.which === 13 && createHost()" ng-model="mainhost" placeholder="IP/Hostname"/>
         <input type="text" id="mainame" ng-keydown="$event.which === 13 && createHost()" ng-model="mainame" placeholder="Instance Name"/>
-        <button id="open" ng-click="launchHost()">Launch & Add</button>
-        <button id="add"  ng-click="launchHost(false)">Add</button>
+        <button id="open" ng-click="createHost()">Launch & Add</button>
+        <button id="add"  ng-click="createHost(false)">Add</button>
     </div>
 
     <div class="topBar">

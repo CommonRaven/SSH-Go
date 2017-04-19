@@ -7,7 +7,8 @@
 var bg = chrome.extension.getBackgroundPage();
 
 function uuid() { // @formatter:off
-    return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g,a=>(a^Math.random()*16>>a/4).toString(16));
+    return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, a => (a ^ Math.random() * 16 >> a / 4).toString(16)
+)
 }// @formatter:on
 
 angular.module('sshgo', ['ngStorage'])
@@ -28,17 +29,27 @@ angular.module('sshgo', ['ngStorage'])
 
         $scope.$ls = $localStorage;
 
+        if(!$scope.$ls.hosts){
+            $scope.$ls.hosts = []
+        }
+
         $scope.fromNow = function (date) {
             return moment(date).fromNow().replace('a few ', '')
         };
 
-        $scope.launchHost = function(hostname){
+        $scope.launchHost = function (hostname) {
             bg.openHost(hostname.trim(), $scope.$ls.killtab);
         };
 
         $scope.createHost = function (skipLaunch) {
+            console.log($scope.mainhost)
+            if(!$scope.mainhost.length){
+                return;
+            }
             $scope.mainhost = $scope.mainhost.trim();
-            if (_.findIndex($scope.$ls.hosts, {hostname: $scope.mainhost}) > -1) {
+            console.log($scope.$ls.hosts)
+            if (_.findIndex($scope.$ls.hosts, {hostname: $scope.mainhost}) === -1) {
+                console.log('add')
                 $scope.$ls.hosts.unshift({
                     id: uuid(),
                     name: $scope.mainame.trim(),
